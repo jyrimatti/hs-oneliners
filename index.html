@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Haskell one-liners</title>
+		<link rel="stylesheet" type="text/css" href="https://lahteenmaki.net/style.css">
+		<style type="text/css">.section { max-width: none; }</style>
+	</head>
+	<body>
+		<div class="container">
+  			<div class="header">
+  				<h1>
+					<span>Haskell one-liners</span>
+					<a href="https://lahteenmaki.net">- lahteenmaki.net</a>
+				</h1>
+			</div>
+		</div>
+
+		<div class="section">
+			<div class="boxcontent">
+				<p>One-liners to launch a complete Haskell development environment.</p>
+				<p>No dependencies needed except for <a href="https://nixos.org/nix/">Nix</a>.</p>
+				<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-58c1b5fdec1759f1"></script>
+			</div>
+		</div>
+
+		<div class="section">
+			<h2>REPL</h2>
+			<div class="boxcontent">
+				<ul>
+					<li>Launch GHCi REPL.</li>
+					<li>Give Haskell packages as PKGS environment variable.</li>
+					<li>If the only parameter is a cabal file, the repl contains Haskell/system packages defined in the cabal file.</li>
+				</ul>
+				<div class="sourceCode">
+					<pre class="sourceCode">
+						<code class="sourceCode">
+                                         sh <(curl https://hs.lahteenmaki.net/repl)
+PKGS='lens aeson'                        sh <(curl https://hs.lahteenmaki.net/repl)
+PKGS=myHaskellProjects/hello/hello.cabal sh <(curl https://hs.lahteenmaki.net/repl)
+						</code>
+					</pre>
+				</div>
+			</div>
+		</div>
+
+		<div class="section">
+			<h2>Shell</h2>
+			<div class="boxcontent">
+				<ul>
+					<li>Launch a shell with GHC and Haskell development tools.</li>
+					<li>In the shell you can start your favorite editor.</li>
+					<li>Give Haskell packages as PKGS environment variable.</li>
+					<li>If the only parameter is a cabal file, the shell contains Haskell development tools and GHC with Haskell/system packages defined in the cabal file.</li>
+				</ul>
+				<div class="sourceCode">
+					<pre class="sourceCode">
+						<code class="sourceCode">
+                                         sh <(curl https://hs.lahteenmaki.net/shell)
+PKGS='lens aeson'                        sh <(curl https://hs.lahteenmaki.net/shell)
+PKGS=myHaskellProjects/hello/hello.cabal sh <(curl https://hs.lahteenmaki.net/shell)
+						</code>
+					</pre>
+				</div>
+			</div>
+		</div>
+
+		<div class="section">
+			<h2>Editor</h2>
+			<div class="boxcontent">
+				<ul>
+					<li>Launch your default editor with GHC and Haskell development tools.</li>
+					<li>Give Haskell packages as PKGS environment variable.</li>
+					<li>If the only parameter is a cabal file, your default editor is opened in the parent folder with Haskell development tools and GHC with Haskell/system packages defined in the cabal file.</li>
+				</ul>
+				<div class="sourceCode">
+					<pre class="sourceCode">
+						<code class="sourceCode">
+                                         sh <(curl https://hs.lahteenmaki.net/editor)
+PKGS='lens aeson'                        sh <(curl https://hs.lahteenmaki.net/editor)
+PKGS=myHaskellProjects/hello/hello.cabal sh <(curl https://hs.lahteenmaki.net/editor)
+						</code>
+					</pre>
+				</div>
+			</div>
+		</div>
+
+		<div class="section">
+			<h2>Sublime Text</h2>
+			<div class="boxcontent">
+				<ul>
+					<li>Launch Sublime Text (if installed) with GHC and Haskell development tools.</li>
+					<li>Give Haskell packages as PKGS environment variable.</li>
+					<li>If the only parameter is a cabal file, Sublime is opened in the parent folder with Haskell development tools and GHC with Haskell/system packages defined in the cabal file.</li>
+				</ul>
+				<div class="sourceCode">
+					<pre class="sourceCode">
+						<code class="sourceCode">
+                                         sh <(curl https://hs.lahteenmaki.net/sublime)
+PKGS='lens aeson'                        sh <(curl https://hs.lahteenmaki.net/sublime)
+PKGS=myHaskellProjects/hello/hello.cabal sh <(curl https://hs.lahteenmaki.net/sublime)
+						</code>
+					</pre>
+				</div>
+			</div>
+		</div>
+
+		<script>
+		  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		  ga('create', 'UA-20222288-1', 'auto');
+		  ga('send', 'pageview');
+
+		</script>
+	</body>
+</html>

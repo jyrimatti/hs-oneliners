@@ -6,9 +6,11 @@ PKGS=${PKGS:-$*}
 export NIXPKGS_ALLOW_BROKEN=1
 export NIXPKGS_ALLOW_UNFREE=1
 
-export NIX_PATH="nixpkgs=https://github.com/NixOS/nixpkgs/archive/bfff24189cae0bf6eceacd5c3e4d8464ba72b895.tar.gz"
-
-
+if [ "$(uname -s)" = "Darwin" ]; then
+	export NIX_PATH="nixpkgs=https://nixos.org/channels/nixpkgs-17.09-darwin/nixexprs.tar.xz"
+else
+	export NIX_PATH="nixpkgs=https://nixos.org/channels/nixos-17.09/nixexprs.tar.xz"
+fi
 
 
 
@@ -20,7 +22,7 @@ devtools="$devtoolsNoOverride (hoogle.override { process-extras = haskell.lib.do
 
 case $PKGS in
 	*.cabal)
-		nix-shell -I 'nixpkgs=https://github.com/NixOS/nixpkgs/archive/f44165f484493fa42140fec252dfefcda6f6dda5.tar.gz' -p cabal2nix --run "cabal2nix --shell $(dirname $PKGS) --extra-arguments $(echo $devtoolsNoOverride $devtoolsOverride | sed 's/[ ]/ --extra-arguments /g') > /tmp/hs.nix"
+		nix-shell -p cabal2nix --run "cabal2nix --shell $(dirname $PKGS) --extra-arguments $(echo $devtoolsNoOverride $devtoolsOverride | sed 's/[ ]/ --extra-arguments /g') > /tmp/hs.nix"
 		nix-shell -p bash --run "sed -i 's/executableHaskellDepends/buildDepends = with pkgs; [$devtools];\nexecutableHaskellDepends/' /tmp/hs.nix"
         if [[ ! $(grep 'buildDepends' /tmp/hs.nix) ]]; then
             nix-shell -p bash --run "sed -i 's/libraryHaskellDepends/buildDepends = with pkgs; [$devtools];\nlibraryHaskellDepends/' /tmp/hs.nix"

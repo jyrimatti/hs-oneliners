@@ -1,0 +1,44 @@
+#! /bin/sh
+set -eu
+
+PKGS=${PKGS:-$*}
+ARGS=${ARGS:-}
+SYSTEM=${SYSTEM:-}
+
+export NIXPKGS_ALLOW_BROKEN=1
+export NIXPKGS_ALLOW_UNFREE=1
+
+if [ "$SYSTEM" = "" ]; then
+	echo "Using system NIX_PATH: $NIX_PATH"
+elif [ "$(uname -s)" = "Darwin" ]; then
+    export NIX_PATH="nixpkgs=https://nixos.org/channels/nixpkgs-17.09-darwin/nixexprs.tar.xz"
+    echo "Using darwin NIX_PATH: $NIX_PATH"
+else
+	export NIX_PATH="nixpkgs=https://nixos.org/channels/nixos-17.09/nixexprs.tar.xz"
+	echo "Using standard NIX_PATH: $NIX_PATH"
+fi
+
+
+
+
+
+
+
+
+devtoolsNoOverride="hasktags pointfree stylish-haskell hindent"
+devtoolsOverride=" "
+devtools="pkgs.haskellPackages.cabal-install $devtoolsNoOverride"
+
+case $PKGS in
+	*.cabal)
+		nix-shell -p cabal2nix --run "cabal2nix --compiler ghcjs --shell $(dirname $PKGS) --extra-arguments $(echo $devtoolsNoOverride $devtoolsOverride | sed 's/[ ]/ --extra-arguments /g') > /tmp/hs.nix"
+		nix-shell -p bash --run "sed -i 's/executableHaskellDepends/buildDepends = with pkgs; [$devtools];\nexecutableHaskellDepends/' /tmp/hs.nix"
+        if [[ ! $(grep 'buildDepends' /tmp/hs.nix) ]]; then
+            nix-shell -p bash --run "sed -i 's/libraryHaskellDepends/buildDepends = with pkgs; [$devtools];\nlibraryHaskellDepends/' /tmp/hs.nix"
+        fi;
+		nix-shell -p pkgconfig -p ctags --run "nix-shell $ARGS --argstr compiler ghcjsHEAD /tmp/hs.nix"
+		;;
+	*)
+		nix-shell $ARGS -p pkgconfig -p ctags -p "haskell.packages.ghcjsHEAD.ghcWithPackages (p: with p; [$devtools $PKGS ])"
+		;;
+esac

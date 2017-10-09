@@ -65,6 +65,27 @@ PKGS=myHaskellProjects/hello/hello.cabal sh <(curl https://hs.lahteenmaki.net/sh
 		</div>
 
 		<div class="section">
+			<h2>GHCJS shell</h2>
+			<div class="boxcontent">
+				<ul>
+					<li>Launch a shell with GHCJS.</li>
+					<li>In the shell you can build to JavaScript.</li>
+					<li>Give Haskell packages as PKGS environment variable.</li>
+					<li>If the only parameter is a cabal file, the shell contains GHCJS with Haskell/system packages defined in the cabal file.</li>
+				</ul>
+				<div class="sourceCode">
+					<pre class="sourceCode">
+						<code class="sourceCode">
+                                         sh <(curl https://hs.lahteenmaki.net/ghcjs)
+PKGS='lens aeson'                        sh <(curl https://hs.lahteenmaki.net/ghcjs)
+PKGS=myHaskellProjects/hello/hello.cabal sh <(curl https://hs.lahteenmaki.net/ghcjs)
+						</code>
+					</pre>
+				</div>
+			</div>
+		</div>
+
+		<div class="section">
 			<h2>Editor</h2>
 			<div class="boxcontent">
 				<ul>

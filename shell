@@ -2,22 +2,31 @@
 set -eu
 
 PKGS=${PKGS:-$*}
+ARGS=${ARGS:-}
+SYSTEM=${SYSTEM:-}
 
 export NIXPKGS_ALLOW_BROKEN=1
 export NIXPKGS_ALLOW_UNFREE=1
 
-if [ "$(uname -s)" = "Darwin" ]; then
-	export NIX_PATH="nixpkgs=https://nixos.org/channels/nixpkgs-17.09-darwin/nixexprs.tar.xz"
+if [ "$SYSTEM" = "" ]; then
+	echo "Using system NIX_PATH: $NIX_PATH"
+elif [ "$(uname -s)" = "Darwin" ]; then
+    export NIX_PATH="nixpkgs=https://nixos.org/channels/nixpkgs-17.09-darwin/nixexprs.tar.xz"
+    echo "Using darwin NIX_PATH: $NIX_PATH"
 else
 	export NIX_PATH="nixpkgs=https://nixos.org/channels/nixos-17.09/nixexprs.tar.xz"
+	echo "Using standard NIX_PATH: $NIX_PATH"
 fi
 
 
 
 
 
-devtoolsNoOverride="cabal-install hdocs hasktags pointfree hsdev hdevtools ghc-mod stylish-haskell hindent"
-devtoolsOverride="hoogle apply-refact process-extras ghc-exactprint"
+
+
+
+devtoolsNoOverride="cabal-install hdocs hasktags pointfree hsdev hdevtools stylish-haskell hindent ghc-mod"
+devtoolsOverride="hoogle process-extras apply-refact ghc-exactprint"
 devtools="$devtoolsNoOverride (hoogle.override { process-extras = haskell.lib.dontCheck process-extras; }) (apply-refact.override { ghc-exactprint = haskell.lib.dontCheck ghc-exactprint; })"
 
 case $PKGS in
@@ -27,9 +36,9 @@ case $PKGS in
         if [[ ! $(grep 'buildDepends' /tmp/hs.nix) ]]; then
             nix-shell -p bash --run "sed -i 's/libraryHaskellDepends/buildDepends = with pkgs; [$devtools];\nlibraryHaskellDepends/' /tmp/hs.nix"
         fi;
-		nix-shell -p pkgconfig -p ctags --run "nix-shell /tmp/hs.nix"
+		nix-shell -p pkgconfig -p ctags --run "nix-shell $ARGS /tmp/hs.nix"
 		;;
 	*)
-		nix-shell -p pkgconfig -p ctags -p "haskellPackages.ghcWithPackages (p: with p; [$devtools $PKGS ])"
+		nix-shell $ARGS -p pkgconfig -p ctags -p "haskellPackages.ghcWithPackages (p: with p; [$devtools $PKGS ])"
 		;;
 esac

@@ -26,7 +26,7 @@ fi
 
 
 
-devtoolsNoOverride="hasktags pointfree stylish-haskell hindent"
+devtoolsNoOverride="stack stack-run intero hasktags pointfree stylish-haskell hindent"
 devtoolsOverride=" "
 devtools="pkgs.haskellPackages.cabal-install $devtoolsNoOverride"
 

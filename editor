@@ -26,7 +26,7 @@ fi
 
 
 
-devtoolsNoOverride="stack stack-run intero cabal-install hdocs hasktags pointfree hsdev hdevtools stylish-haskell hindent ghc-mod"
+devtoolsNoOverride="stack intero Cabal cabal-install hdocs hasktags pointfree hdevtools stylish-haskell hindent hlint"
 devtoolsOverride="hoogle process-extras apply-refact ghc-exactprint"
 devtools="$devtoolsNoOverride (hoogle.override { process-extras = haskell.lib.dontCheck process-extras; }) (apply-refact.override { ghc-exactprint = haskell.lib.dontCheck ghc-exactprint; })"
 
@@ -37,7 +37,7 @@ case $PKGS in
 		if [[ ! $(grep 'buildDepends' /tmp/hs.nix) ]]; then
             nix-shell -p bash --run "sed -i 's/libraryHaskellDepends/buildDepends = with pkgs; [$devtools];\nlibraryHaskellDepends/' /tmp/hs.nix"
         fi;
-		nix-shell -p pkgconfig -p ctags -p xdg_utils --run "nix-shell $ARGS /tmp/hs.nix --run 'xdg-open $PKGS'"
+		nix-shell -p pkgconfig -p ctags --run "nix-shell $ARGS /tmp/hs.nix --run '${EDITOR:-vi} $PKGS'"
 		;;
 	*)
 		nix-shell $ARGS -p pkgconfig -p ctags -p "haskellPackages.ghcWithPackages (p: with p; [$devtools $PKGS ])" --run "${EDITOR:-vi}"

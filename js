@@ -12,10 +12,10 @@ if [ "$WITH_NIX_PATH" != "" ]; then
 	echo "Using given NIX_PATH: $WITH_NIX_PATH"
 	export NIX_PATH="$WITH_NIX_PATH"
 elif [ "$(uname -s)" = "Darwin" ]; then
-    export NIX_PATH="nixpkgs=https://github.com/NixOS/nixpkgs/archive/bc66772e76f24e761c37f62cedaf87b71d35d1c9.tar.gz"
+    export NIX_PATH="nixpkgs=channel:nixpkgs-18.09-darwin"
     echo "Using darwin NIX_PATH: $NIX_PATH"
 else
-	export NIX_PATH="nixpkgs=https://nixos.org/channels/nixos-17.09/nixexprs.tar.xz"
+	export NIX_PATH="nixpkgs=channel:nixos-18.09"
 	echo "Using standard NIX_PATH: $NIX_PATH"
 fi
 
@@ -26,7 +26,7 @@ fi
 
 
 
-devtoolsNoOverride="stack stack-run intero hasktags pointfree stylish-haskell hindent"
+devtoolsNoOverride="stack intero hasktags pointfree stylish-haskell hindent"
 devtoolsOverride=" "
 devtools="pkgs.haskellPackages.cabal-install $devtoolsNoOverride"
 
@@ -37,9 +37,9 @@ case $PKGS in
         if [[ ! $(grep 'buildDepends' /tmp/hs.nix) ]]; then
             nix-shell -p bash --run "sed -i 's/libraryHaskellDepends/buildDepends = with pkgs; [$devtools];\nlibraryHaskellDepends/' /tmp/hs.nix"
         fi;
-		nix-shell -p pkgconfig -p ctags --run "nix-shell $ARGS --argstr compiler ghcjsHEAD /tmp/hs.nix"
+		nix-shell -p pkgconfig -p ctags --run "nix-shell $ARGS --argstr compiler ghcjs /tmp/hs.nix"
 		;;
 	*)
-		nix-shell $ARGS -p pkgconfig -p ctags -p "haskell.packages.ghcjsHEAD.ghcWithPackages (p: with p; [$devtools $PKGS ])"
+		nix-shell $ARGS -p pkgconfig -p ctags -p "haskell.packages.ghcjs.ghcWithPackages (p: with p; [$devtools $PKGS ])"
 		;;
 esac

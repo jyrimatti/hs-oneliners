@@ -12,10 +12,10 @@ if [ "$WITH_NIX_PATH" != "" ]; then
 	echo "Using given NIX_PATH: $WITH_NIX_PATH"
 	export NIX_PATH="$WITH_NIX_PATH"
 elif [ "$(uname -s)" = "Darwin" ]; then
-    export NIX_PATH="nixpkgs=https://github.com/NixOS/nixpkgs/archive/bc66772e76f24e761c37f62cedaf87b71d35d1c9.tar.gz"
+    export NIX_PATH="nixpkgs=channel:nixpkgs-18.09-darwin"
     echo "Using darwin NIX_PATH: $NIX_PATH"
 else
-	export NIX_PATH="nixpkgs=https://nixos.org/channels/nixos-17.09/nixexprs.tar.xz"
+	export NIX_PATH="nixpkgs=channel:nixos-18.09"
 	echo "Using standard NIX_PATH: $NIX_PATH"
 fi
 

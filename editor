@@ -26,7 +26,7 @@ fi
 
 
 
-devtoolsNoOverride="stack intero Cabal cabal-install hdocs hasktags pointfree hdevtools stylish-haskell hindent hlint"
+devtoolsNoOverride="stack Cabal cabal-install hdocs hasktags pointfree hdevtools stylish-haskell hindent hlint"
 devtoolsOverride="hoogle process-extras apply-refact ghc-exactprint"
 devtools="$devtoolsNoOverride (hoogle.override { process-extras = haskell.lib.dontCheck process-extras; }) (apply-refact.override { ghc-exactprint = haskell.lib.dontCheck ghc-exactprint; })"
 

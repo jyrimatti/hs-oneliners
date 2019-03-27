@@ -12,10 +12,10 @@ if [ "$WITH_NIX_PATH" != "" ]; then
 	echo "Using given NIX_PATH: $WITH_NIX_PATH"
 	export NIX_PATH="$WITH_NIX_PATH"
 elif [ "$(uname -s)" = "Darwin" ]; then
-    export NIX_PATH="nixpkgs=channel:nixpkgs-18.09-darwin"
+    export NIX_PATH="nixpkgs=channel:nixpkgs-19.03-darwin"
     echo "Using darwin NIX_PATH: $NIX_PATH"
 else
-	export NIX_PATH="nixpkgs=channel:nixos-18.09"
+	export NIX_PATH="nixpkgs=channel:nixos-19.03"
 	echo "Using standard NIX_PATH: $NIX_PATH"
 fi
 
@@ -26,16 +26,15 @@ fi
 
 
 
-devtoolsNoOverride="stack intero hasktags pointfree stylish-haskell hindent"
-devtoolsOverride=" "
-devtools="pkgs.haskellPackages.cabal-install $devtoolsNoOverride"
+devtoolsQualified="pkgs.haskellPackages.cabal-install"
+devtools="cabal-install"
 
 case $PKGS in
 	*.cabal)
-		nix-shell -p cabal2nix --run "cabal2nix --compiler ghcjs --shell $(dirname $PKGS) --extra-arguments $(echo $devtoolsNoOverride $devtoolsOverride | sed 's/[ ]/ --extra-arguments /g') > /tmp/hs.nix"
-		nix-shell -p bash --run "sed -i 's/executableHaskellDepends/buildDepends = with pkgs; [$devtools];\nexecutableHaskellDepends/' /tmp/hs.nix"
+		nix-shell -p cabal2nix --run "cabal2nix --compiler ghcjs --shell $(dirname $PKGS) --extra-arguments $(echo $devtools | sed 's/[ ]/ --extra-arguments /g') > /tmp/hs.nix"
+		nix-shell -p bash --run "sed -i 's/executableHaskellDepends/buildDepends = with pkgs; [$devtoolsQualified];\nexecutableHaskellDepends/' /tmp/hs.nix"
         if [[ ! $(grep 'buildDepends' /tmp/hs.nix) ]]; then
-            nix-shell -p bash --run "sed -i 's/libraryHaskellDepends/buildDepends = with pkgs; [$devtools];\nlibraryHaskellDepends/' /tmp/hs.nix"
+            nix-shell -p bash --run "sed -i 's/libraryHaskellDepends/buildDepends = with pkgs; [$devtoolsQualified];\nlibraryHaskellDepends/' /tmp/hs.nix"
         fi;
 		nix-shell -p pkgconfig -p ctags --run "nix-shell $ARGS --argstr compiler ghcjs /tmp/hs.nix"
 		;;

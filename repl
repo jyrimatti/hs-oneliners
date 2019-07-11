@@ -1,45 +1,37 @@
 #! /bin/sh
 set -eu
 
-PKGS=${PKGS:-$*}
+FILE_OR_PKGS=${PKGS:-$*}
 ARGS=${ARGS:-}
-WITH_NIX_PATH=${WITH_NIX_PATH:-}
 
 export NIXPKGS_ALLOW_BROKEN=1
 export NIXPKGS_ALLOW_UNFREE=1
 
-if [ "$WITH_NIX_PATH" != "" ]; then
-	echo "Using given NIX_PATH: $WITH_NIX_PATH"
-	export NIX_PATH="$WITH_NIX_PATH"
-elif [ "$(uname -s)" = "Darwin" ]; then
-    export NIX_PATH="nixpkgs=channel:nixpkgs-18.09-darwin"
+if [ "$(uname -s)" = "Darwin" ]; then
+    export NIX_PATH="nixpkgs=channel:nixpkgs-19.03-darwin"
     echo "Using darwin NIX_PATH: $NIX_PATH"
 else
-	export NIX_PATH="nixpkgs=channel:nixos-18.09"
+	export NIX_PATH="nixpkgs=channel:nixos-19.03"
 	echo "Using standard NIX_PATH: $NIX_PATH"
 fi
 
+devtools="pkgconfig cabal-install"
 
 
 
 
-
-
-
-
-
-devtools="cabal-install"
-
-case $PKGS in
+case $FILE_OR_PKGS in
 	*.cabal)
-		nix-shell -p cabal2nix --run "cabal2nix --shell $(dirname $PKGS) --extra-arguments $(echo $devtools | sed 's/[ ]/ --extra-arguments /g') > /tmp/hs.nix"
-		nix-shell -p bash --run "sed -i 's/executableHaskellDepends/buildDepends = with pkgs; [$devtools];\nexecutableHaskellDepends/' /tmp/hs.nix"
-		if [[ ! $(grep 'buildDepends' /tmp/hs.nix) ]]; then
-            nix-shell -p bash --run "sed -i 's/libraryHaskellDepends/buildDepends = with pkgs; [$devtools];\nlibraryHaskellDepends/' /tmp/hs.nix"
-        fi;
-		nix-shell -p pkgconfig -p ctags --run "nix-shell $ARGS /tmp/hs.nix --run 'cd $(dirname $PKGS) && cabal repl'"
+		nix-shell -p cabal2nix --run "cabal2nix --shell $(dirname $FILE_OR_PKGS) > /tmp/hs.nix"
+		# orig_path trick because nix-shell orders path in an odd way: https://github.com/NixOS/nix/issues/1671
+		nix-shell -p $devtools --command "export ORIG_PATH=\$PATH; nix-shell --pure --keep ORIG_PATH $ARGS --run 'cd $(dirname $FILE_OR_PKGS); PATH=\$PATH:\$ORIG_PATH cabal repl' /tmp/hs.nix"
+		;;
+	# Create shell environment based no a given nix file (e.g. ./default.nix)
+	*.nix)
+		# orig_path trick because nix-shell orders path in an odd way: https://github.com/NixOS/nix/issues/1671
+		nix-shell -p $devtools --command "export ORIG_PATH=\$PATH; nix-shell --pure --keep ORIG_PATH $ARGS --run 'cd $(dirname $FILE_OR_PKGS); PATH=\$PATH:\$ORIG_PATH cabal repl' $FILE_OR_PKGS"
 		;;
 	*)
-		nix-shell $ARGS -p pkgconfig -p ctags -p "haskellPackages.ghcWithPackages (p: with p; [$PKGS])" --run "ghci"
+		nix-shell $ARGS -p "haskellPackages.ghcWithPackages (p: with p; [$devtools $FILE_OR_PKGS])" --run "ghci"
 		;;
 esac

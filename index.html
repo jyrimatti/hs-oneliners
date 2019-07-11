@@ -19,6 +19,8 @@
 			<div class="boxcontent">
 				<p>One-liners to launch a complete Haskell development environment.</p>
 				<p>No dependencies needed except for <a href="https://nixos.org/nix/">Nix</a>.</p>
+				<p>If you clone the repo and add it to a path, you can give the contents of PKGS simply as command line arguments.</p>
+				<p>Use ARGS environment variable to give extra arguments to nix-shell.</p>
 				<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-58c1b5fdec1759f1"></script>
 			</div>
 		</div>
@@ -30,6 +32,7 @@
 					<li>Launch GHCi REPL.</li>
 					<li>Give Haskell packages as PKGS environment variable.</li>
 					<li>If the only parameter is a cabal file, the repl contains Haskell/system packages defined in the cabal file.</li>
+					<li>If the only parameter is a Nix file, the repl contains environment defined in the Nix file.</li>
 				</ul>
 				<div class="sourceCode">
 					<pre class="sourceCode">
@@ -37,6 +40,7 @@
                                          sh <(curl https://hs.lahteenmaki.net/repl)
 PKGS='lens aeson'                        sh <(curl https://hs.lahteenmaki.net/repl)
 PKGS=myHaskellProjects/hello/hello.cabal sh <(curl https://hs.lahteenmaki.net/repl)
+PKGS=myHaskellProjects/hello/default.nix sh <(curl https://hs.lahteenmaki.net/repl)
 						</code>
 					</pre>
 				</div>
@@ -48,9 +52,9 @@ PKGS=myHaskellProjects/hello/hello.cabal sh <(curl https://hs.lahteenmaki.net/re
 			<div class="boxcontent">
 				<ul>
 					<li>Launch a shell with GHC and Haskell development tools.</li>
-					<li>In the shell you can start your favorite editor.</li>
 					<li>Give Haskell packages as PKGS environment variable.</li>
 					<li>If the only parameter is a cabal file, the shell contains Haskell development tools and GHC with Haskell/system packages defined in the cabal file.</li>
+					<li>If the only parameter is a Nix file, the repl contains Haskell development tools and the environment defined in the Nix file.</li>
 				</ul>
 				<div class="sourceCode">
 					<pre class="sourceCode">
@@ -58,6 +62,7 @@ PKGS=myHaskellProjects/hello/hello.cabal sh <(curl https://hs.lahteenmaki.net/re
                                          sh <(curl https://hs.lahteenmaki.net/shell)
 PKGS='lens aeson'                        sh <(curl https://hs.lahteenmaki.net/shell)
 PKGS=myHaskellProjects/hello/hello.cabal sh <(curl https://hs.lahteenmaki.net/shell)
+PKGS=myHaskellProjects/hello/default.nix sh <(curl https://hs.lahteenmaki.net/shell)
 						</code>
 					</pre>
 				</div>
@@ -68,10 +73,10 @@ PKGS=myHaskellProjects/hello/hello.cabal sh <(curl https://hs.lahteenmaki.net/sh
 			<h2>GHCJS shell</h2>
 			<div class="boxcontent">
 				<ul>
-					<li>Launch a shell with GHCJS.</li>
-					<li>In the shell you can build to JavaScript.</li>
+					<li>Launch a shell with GHCJS and Haskell development tools.</li>
 					<li>Give Haskell packages as PKGS environment variable.</li>
-					<li>If the only parameter is a cabal file, the shell contains GHCJS with Haskell/system packages defined in the cabal file.</li>
+					<li>If the only parameter is a cabal file, the shell contains Haskell development tools and GHCJS with Haskell/system packages defined in the cabal file.</li>
+					<li>If the only parameter is a Nix file, the repl contains Haskell development tools and the environment (using GHCJS compiler) defined in the Nix file.</li>
 				</ul>
 				<div class="sourceCode">
 					<pre class="sourceCode">
@@ -79,6 +84,7 @@ PKGS=myHaskellProjects/hello/hello.cabal sh <(curl https://hs.lahteenmaki.net/sh
                                          sh <(curl https://hs.lahteenmaki.net/ghcjs)
 PKGS='lens aeson'                        sh <(curl https://hs.lahteenmaki.net/ghcjs)
 PKGS=myHaskellProjects/hello/hello.cabal sh <(curl https://hs.lahteenmaki.net/ghcjs)
+PKGS=myHaskellProjects/hello/default.nix sh <(curl https://hs.lahteenmaki.net/ghcjs)
 						</code>
 					</pre>
 				</div>
@@ -92,6 +98,7 @@ PKGS=myHaskellProjects/hello/hello.cabal sh <(curl https://hs.lahteenmaki.net/gh
 					<li>Launch your default editor with GHC and Haskell development tools.</li>
 					<li>Give Haskell packages as PKGS environment variable.</li>
 					<li>If the only parameter is a cabal file, your default editor is opened in the parent folder with Haskell development tools and GHC with Haskell/system packages defined in the cabal file.</li>
+					<li>If the only parameter is a Nix file, your default editor is opened in the parent folder with Haskell development tools and the environment defined in the Nix file.</li>
 				</ul>
 				<div class="sourceCode">
 					<pre class="sourceCode">
@@ -99,26 +106,7 @@ PKGS=myHaskellProjects/hello/hello.cabal sh <(curl https://hs.lahteenmaki.net/gh
                                          sh <(curl https://hs.lahteenmaki.net/editor)
 PKGS='lens aeson'                        sh <(curl https://hs.lahteenmaki.net/editor)
 PKGS=myHaskellProjects/hello/hello.cabal sh <(curl https://hs.lahteenmaki.net/editor)
-						</code>
-					</pre>
-				</div>
-			</div>
-		</div>
-
-		<div class="section">
-			<h2>Sublime Text</h2>
-			<div class="boxcontent">
-				<ul>
-					<li>Launch Sublime Text (if installed) with GHC and Haskell development tools.</li>
-					<li>Give Haskell packages as PKGS environment variable.</li>
-					<li>If the only parameter is a cabal file, Sublime is opened in the parent folder with Haskell development tools and GHC with Haskell/system packages defined in the cabal file.</li>
-				</ul>
-				<div class="sourceCode">
-					<pre class="sourceCode">
-						<code class="sourceCode">
-                                         sh <(curl https://hs.lahteenmaki.net/sublime)
-PKGS='lens aeson'                        sh <(curl https://hs.lahteenmaki.net/sublime)
-PKGS=myHaskellProjects/hello/hello.cabal sh <(curl https://hs.lahteenmaki.net/sublime)
+PKGS=myHaskellProjects/hello/default.nix sh <(curl https://hs.lahteenmaki.net/editor)
 						</code>
 					</pre>
 				</div>

@@ -17,21 +17,21 @@ fi
 
 devtools="pkgconfig cabal-install"
 
-
-
+NIX_EXTRA_OPTIONS="--option extra-substituters https://binarycache.lahteenmaki.net --option trusted-public-keys"
+NIX_EXTRA_OPTIONS2="binarycache.lahteenmaki.net:7Sy5MuTu2SYzROwvDIYCJHiR5Xk7SDYPxdXcB9XTVrw= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
 
 case $FILE_OR_PKGS in
 	*.cabal)
 		nix-shell -p cabal2nix --run "cabal2nix --shell $(dirname $FILE_OR_PKGS) > /tmp/hs.nix"
 		# orig_path trick because nix-shell orders path in an odd way: https://github.com/NixOS/nix/issues/1671
-		nix-shell -p $devtools --command "export ORIG_PATH=\$PATH; nix-shell --pure --keep ORIG_PATH $ARGS --run 'cd $(dirname $FILE_OR_PKGS); PATH=\$PATH:\$ORIG_PATH cabal repl' /tmp/hs.nix"
+		nix-shell -p $devtools $NIX_EXTRA_OPTIONS "$NIX_EXTRA_OPTIONS2" --command "export ORIG_PATH=\$PATH; nix-shell --pure --keep ORIG_PATH $ARGS --run 'cd $(dirname $FILE_OR_PKGS); PATH=\$PATH:\$ORIG_PATH cabal repl' /tmp/hs.nix"
 		;;
 	# Create shell environment based no a given nix file (e.g. ./default.nix)
 	*.nix)
 		# orig_path trick because nix-shell orders path in an odd way: https://github.com/NixOS/nix/issues/1671
-		nix-shell -p $devtools --command "export ORIG_PATH=\$PATH; nix-shell --pure --keep ORIG_PATH $ARGS --run 'cd $(dirname $FILE_OR_PKGS); PATH=\$PATH:\$ORIG_PATH cabal repl' $FILE_OR_PKGS"
+		nix-shell -p $devtools $NIX_EXTRA_OPTIONS "$NIX_EXTRA_OPTIONS2" --command "export ORIG_PATH=\$PATH; nix-shell --pure --keep ORIG_PATH $ARGS --run 'cd $(dirname $FILE_OR_PKGS); PATH=\$PATH:\$ORIG_PATH cabal repl' $FILE_OR_PKGS"
 		;;
 	*)
-		nix-shell $ARGS -p "haskellPackages.ghcWithPackages (p: with p; [$devtools $FILE_OR_PKGS])" --run "ghci"
+		nix-shell $ARGS -p $devtools $NIX_EXTRA_OPTIONS "$NIX_EXTRA_OPTIONS2" --command "export ORIG_PATH=\$PATH; nix-shell --pure --keep ORIG_PATH $ARGS -p \"haskellPackages.ghcWithPackages (p: with p; [$FILE_OR_PKGS])\" --run 'ghci'"
 		;;
 esac
